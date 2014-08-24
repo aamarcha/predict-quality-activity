@@ -6,13 +6,13 @@ date: "23 août 2014"
 The exercises were performed by six male participants aged between 20-28 years, with little weight lifting experience. The goal is to predict the activity quality from activity monitors collected from these exercices. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.
 Read more: http://groupware.les.inf.puc-rio.br/har#ixzz3BIcn6MnR
 
-In this project, I choose Random Forest package  for prediction.
+The accuracy of the prediction of the activity quality is arount 99.5% using Random forest algorithm.
 
 #Methodoloy
 
-1. First I clean data : removing NA and not generalized data, user classes as factors.
-2. Then I make a partition : 75% for traing data and 25 for test data.
-3. I build a model : Classe as outcome and all other variables as predictors using random forest  as boosted tree machine learning algorithm."gmb" implementation takes a very long time.
+1. First I clean data : removing NA and not generalized variables, classes as factors.
+2. Then I make a partition : 75% for traing data and 25% for test.
+3. I build a model using random forest algorithm. GMB implementation takes a very long time.
 4. I make predictions basing on this Model.
 
 #Getting Data

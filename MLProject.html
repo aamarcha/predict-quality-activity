@@ -60,13 +60,13 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 <p>The exercises were performed by six male participants aged between 20-28 years, with little weight lifting experience. The goal is to predict the activity quality from activity monitors collected from these exercices. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes. Read more: <a href="http://groupware.les.inf.puc-rio.br/har#ixzz3BIcn6MnR">http://groupware.les.inf.puc-rio.br/har#ixzz3BIcn6MnR</a></p>
-<p>In this project, I choose Random Forest package for prediction.</p>
+<p>The accuracy of the prediction of the activity quality is arount 99.5% using Random forest algorithm.</p>
 <div id="methodoloy" class="section level1">
 <h1>Methodoloy</h1>
 <ol style="list-style-type: decimal">
-<li>First I clean data : removing NA and not generalized data, user classes as factors.</li>
-<li>Then I make a partition : 75% for traing data and 25 for test data.</li>
-<li>I build a model : Classe as outcome and all other variables as predictors using random forest as boosted tree machine learning algorithm.“gmb” implementation takes a very long time.</li>
+<li>First I clean data : removing NA and not generalized variables, classes as factors.</li>
+<li>Then I make a partition : 75% for traing data and 25% for test.</li>
+<li>I build a model using random forest algorithm. GMB implementation takes a very long time.</li>
 <li>I make predictions basing on this Model.</li>
 </ol>
 </div>
