@@ -92,7 +92,7 @@ pml_write_files = function(x){
   }
 }
 prediction  <- predict(rf.mdl, testMotion)
-
+prediction
 pml_write_files(prediction)
 ```
 
