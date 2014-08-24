@@ -1,0 +1,104 @@
+---
+title: "Predict activity quality from activity monitors through motion data "
+author: "Aamarcha"
+date: "23 août 2014"
+---
+The exercises were performed by six male participants aged between 20-28 years, with little weight lifting experience. The goal is to predict the activity quality from activity monitors collected from these exercices. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.
+Read more: http://groupware.les.inf.puc-rio.br/har#ixzz3BIcn6MnR
+
+In this project, I choose Random Forest package  for prediction.
+
+#Methodoloy
+
+1. First I clean data : removing NA and not generalized data, user classes as factors.
+2. Then I make a partition : 75% for traing data and 25 for test data.
+3. I build a model : Classe as outcome and all other variables as predictors using random forest  as boosted tree machine learning algorithm."gmb" implementation takes a very long time.
+4. I make predictions basing on this Model.
+
+#Getting Data
+Data was downloaded from 
+
+1. Training data : https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+2. Test data : https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+The package used for prediction is caret.
+```{r loadPackages, results="hide",message=FALSE}
+library(caret)
+library(plyr)
+library(randomForest)
+library('scales')
+```
+
+Reading the data:
+```{r preparing, cache=TRUE, results="hide"}
+trainingMotion <- read.csv("./data/pml-training.csv",stringsAsFactors=F,na.string = c("NA", ""))
+testMotion <- read.csv("./data/pml-testing.csv",stringsAsFactors=F,na.string = c("NA", ""))
+```
+#Cleaning and preparing data
+Remove NA data and not generalizable colomns. As you can see, 160 variables of the data contains 98% missing or NA value.
+```{r cleanNA,}
+NAcounter  <- apply(trainingMotion, 2, function(x) sum(is.na(x)))
+table(round(NAcounter/nrow(trainingMotion), 2))
+trainingMotion  <- trainingMotion[, names(NAcounter)[NAcounter == 0]]
+trainingMotion <- trainingMotion[, -c(1:7)]
+```
+
+Use classes as a factor.
+```{r cleanno,}
+trainingMotion <- mutate(trainingMotion,classe=factor(classe))
+```
+Create partitions, 75% for traning data and 2% for test data.
+
+```{r partition,}
+set.seed(123)
+inTrain <- createDataPartition(y = trainingMotion$classe, p = 0.75, list = F)
+trainingMotion.train <- trainingMotion[inTrain, ]
+trainingMotion.test <- trainingMotion[-inTrain, ]
+```
+
+# Model building
+I use the random forest implementation because it's faster in my context. You can see that the model is 99.5% accurate and  the 95% confidence interval for accuracy is from 99.3% to 99.7%.
+
+```{r build,}
+set.seed(456)
+# repeated cross validation
+trControl <- trainControl(method="repeatedcv", number=10, repeats=10)
+
+# train with  "rf" method takes a long time
+rf.mdl<- randomForest(classe ~ ., data = trainingMotion.train,verbose=FALSE,metric="Accuracy", trControl =trControl )
+confusionMatrix <- confusionMatrix(trainingMotion.test$classe, predict(rf.mdl, trainingMotion.test))
+confusionMatrix
+```
+
+Here you have the error plot and the importance of variables in this model.
+
+```{r plot,}
+plot(rf.mdl, main="Error vs trees")
+varImpPlot(rf.mdl, main="Importance of variables")
+```
+
+Out of sample error rate
+```{r error,}
+percent(1 - confusionMatrix$overall[[1]])
+```
+
+#Prediction and submission
+```{r prediction,}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+prediction  <- predict(rf.mdl, testMotion)
+
+pml_write_files(prediction)
+```
+
+#Appendix
+The importance of variables in this model
+```{r imprtance,}
+importance(rf.mdl)
+```
+
